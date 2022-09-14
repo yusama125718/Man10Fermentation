@@ -1,16 +1,14 @@
-name: Man10Fermentation
+name: AdvancedPotion
 version: '${project.version}'
-main: yusama125718.man10fermentation.Man10Fermentation
+main: yusama125718.advancedpotion.AdvancedPotion
 api-version: 1.17
 authors: [ yusama125718 ]
 
 commands:
-  mferm:
-    description: Man10Fermentation
-    usage: /mferm helpでコマンドを確認
+  advpot:
+    description: Advanced Potion
+    usage: /advpot helpでコマンドを確認
 
 permissions:
-  mferm.op:
+  advpot.op:
     default: op
-  mferm.p:
-    default: true
