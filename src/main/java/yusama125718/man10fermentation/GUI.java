@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 import static yusama125718.man10fermentation.Function.getItem;
 import static yusama125718.man10fermentation.Man10Fermentation.recipes;
@@ -60,9 +59,21 @@ public class GUI {
         Data.recipe target = recipes.get(index);
         Inventory inv = Bukkit.createInventory(null,18,Component.text("[MFerm]" + target.name));
         for (int i = 0;i < 18;i++) inv.setItem(i,getItem(Material.WHITE_STAINED_GLASS_PANE,1,"",0));
+        int min, hour, day = 0;
+        String time = "";
+        if (target.time >= 1440){
+            day = target.time / 1440;
+            hour = (target.time % 1440) / 60;
+            min = target.time % 60;
+            time = day + "日" + hour + "時間" + min + "分";
+        } else if (target.time >= 60) {
+            hour = target.time / 60;
+            min = target.time % 60;
+            time = hour + "時間" + min + "分";
+        } else time = target.time + "分";
         inv.setItem(12,getItem(Material.RED_STAINED_GLASS_PANE,1,"材料",1));
         inv.setItem(14,getItem(Material.BLUE_STAINED_GLASS_PANE,1,"完成品",1));
-        inv.setItem(4,getItem(Material.QUARTZ,1,"",62));
+        inv.setItem(4,getItem(Material.QUARTZ,1,time,62));
         inv.setItem(3,target.material);
         inv.setItem(5,target.result);
         p.openInventory(inv);
@@ -81,15 +92,14 @@ public class GUI {
     public static void OpenRecipeBarrel(Player p, Data.recipe r, LocalDateTime d){
         Inventory inv = Bukkit.createInventory(null,18, Component.text("[MFerm]発酵中"));
         for (int i = 0;i < 18;i++) inv.setItem(i,getItem(Material.WHITE_STAINED_GLASS_PANE,1,"",1));
-        long remaining = ChronoUnit.MINUTES.between(LocalDateTime.now(),d);
         LocalDateTime finishtime = d.plusMinutes(r.time);
         if (LocalDateTime.now().isAfter(finishtime)){
             inv.setItem(4,r.result);
             inv.setItem(13,getItem(Material.RED_STAINED_GLASS_PANE,1,"受け取り",1));
             p.openInventory(inv);
         } else {
-            DateTimeFormatter f = DateTimeFormatter.ofPattern("MM-dd HH:mm");
-            String name = "完成予定 : " + LocalDateTime.now().plusMinutes(remaining).format(f);
+            DateTimeFormatter f = DateTimeFormatter.ofPattern("MM/dd HH:mm");
+            String name = "完成予定 : " + finishtime.format(f);
             int i = 0;
             if (r.material.hasItemMeta() && r.material.getItemMeta().hasCustomModelData()) i = r.material.getItemMeta().getCustomModelData();
             inv.setItem(4, getItem(r.material.getType(), r.material.getAmount(), name, i));

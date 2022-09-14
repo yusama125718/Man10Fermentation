@@ -34,8 +34,8 @@ public class Config {
             Bukkit.broadcast("§a§l[Man10Fermentation] §r" + file.getName() + "の読み込みに失敗しました","mferm.op");
             return null;
         }
-        ItemStack material = config.getItemStack("ingredient");
-        ItemStack result = config.getItemStack("material");
+        ItemStack material = config.getItemStack("material");
+        ItemStack result = config.getItemStack("result");
         return new Data.recipe(config.getString("name"),config.getInt("time"),material,result);
     }
 }

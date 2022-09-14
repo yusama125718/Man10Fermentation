@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static java.lang.Integer.parseInt;
 import static yusama125718.man10fermentation.GUI.addrecipeGUI;
@@ -35,7 +33,7 @@ public class Command implements CommandExecutor, TabCompleter {
                         sender.sendMessage("§a§l[Man10Fermentation] §r/mferm unlock 発酵樽のロックを解除します");
                         if (sender.hasPermission("mferm.op")){
                             sender.sendMessage("§a§l[Man10Fermentation] §r/mferm on/off システムをon/offします");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm barral 発酵用の樽を自分付与します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm barral 発酵用の樽を自分に付与します");
                             sender.sendMessage("§a§l[Man10Fermentation] §r/mferm add [名前] [時間(分)] レシピを追加します");
                             sender.sendMessage("§a§l[Man10Fermentation] §r/mferm delete [名前] レシピを削除します");
                             sender.sendMessage("§a§l[Man10Fermentation] §r/mferm addworld [ワールド名] 設置できるワールドを追加します");
@@ -52,7 +50,7 @@ public class Command implements CommandExecutor, TabCompleter {
                             return true;
                         }
                         unlockuser.remove((Player) sender);
-                        if (lockuser.contains((Player) sender)) lockuser.add((Player) sender);
+                        if (!lockuser.contains((Player) sender)) lockuser.add((Player) sender);
                         sender.sendMessage("§a§l[Man10Fermentation] §rロックしたい発酵樽を壊してください");
                         return true;
 
@@ -62,7 +60,7 @@ public class Command implements CommandExecutor, TabCompleter {
                             return true;
                         }
                         lockuser.remove((Player) sender);
-                        if (unlockuser.contains((Player) sender)) unlockuser.add((Player) sender);
+                        if (!unlockuser.contains((Player) sender)) unlockuser.add((Player) sender);
                         sender.sendMessage("§a§l[Man10Fermentation] §rロックしたい発酵樽を壊してください");
                         return true;
 
@@ -207,7 +205,62 @@ public class Command implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        if (sender.hasPermission("mferm.p")) return null;
+        if (!sender.hasPermission("mferm.p")) return null;
+        if(command.getName().equalsIgnoreCase("mferm")) {
+            if (args.length == 1) {
+                if (args[0].length() == 0) {
+                    if (sender.hasPermission("mferm.op"))
+                        return Arrays.asList("add", "addworld", "barral", "delete", "deleteworld", "lock", "on", "off", "unlock");
+                    else return Arrays.asList("lock", "unlock");
+                } else {
+                    if (sender.hasPermission("mferm.op")) {
+                        if ("add".startsWith(args[0]) && "addworld".startsWith(args[0])) {
+                            return Arrays.asList("add", "addworld");
+                        }
+                        else if ("addworld".startsWith(args[0])) {
+                            return Collections.singletonList("addworld");
+                        }
+                        else if ("barral".startsWith(args[0])) {
+                            return Collections.singletonList("barral");
+                        }
+                        else if ("delete".startsWith(args[0]) && "deleteworld".startsWith(args[0])) {
+                            return Arrays.asList("add", "addworld");
+                        }
+                        else if ("deleteworld".startsWith(args[0])) {
+                            return Collections.singletonList("deleteworld");
+                        }
+                        else if ("on".startsWith(args[0]) && "off".startsWith(args[0])) {
+                            return Arrays.asList("on", "off");
+                        }
+                        else if ("on".startsWith(args[0])) {
+                            return Collections.singletonList("on");
+                        }
+                        else if ("off".startsWith(args[0])) {
+                            return Collections.singletonList("off");
+                        }
+                    }
+                    if ("lock".startsWith(args[0])) {
+                        return Collections.singletonList("lock");
+                    }
+                    else if ("unlock".startsWith(args[0])) {
+                        return Collections.singletonList("unlock");
+                    }
+                }
+            } else if (args.length == 2 && sender.hasPermission("mferm.op")) {
+                if (args[0].equals("addworld") || args[0].equals("deleteworld")) {
+                    ArrayList<String> w = new ArrayList<>();
+                    for (World world : Bukkit.getWorlds()) w.add(world.getName());
+                    return w;
+                }
+                else if (args[0].equals("add") || args[0].equals("delete")) {
+                    return Collections.singletonList("[レシピ名]");
+                }
+            } else if (args.length == 3 && sender.hasPermission("mferm.op")) {
+                if (args[0].equals("add") || args[0].equals("delete")) {
+                    return Collections.singletonList("[時間(分)]");
+                }
+            }
+        }
         return null;
     }
 }
