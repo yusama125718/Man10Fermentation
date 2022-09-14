@@ -1,0 +1,16 @@
+name: Man10Fermentation
+version: '${project.version}'
+main: yusama125718.man10fermentation.Man10Fermentation
+api-version: 1.17
+authors: [ yusama125718 ]
+
+commands:
+  mferm:
+    description: Man10Fermentation
+    usage: /mferm helpでコマンドを確認
+
+permissions:
+  mferm.op:
+    default: op
+  mferm.p:
+    default: true
