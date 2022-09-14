@@ -1,11 +1,13 @@
 package yusama125718.man10fermentation;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,16 +30,17 @@ public class Command implements CommandExecutor, TabCompleter {
             case 1:
                 switch (args[0]){
                     case "help":
-                        sender.sendMessage("§a§l[Man10Fermentation] §r/mferm レシピを表示します");
-                        sender.sendMessage("§a§l[Man10Fermentation] §r/mferm lock 発酵樽をロックします");
-                        sender.sendMessage("§a§l[Man10Fermentation] §r/mferm unlock 発酵樽のロックを解除します");
+                        sender.sendMessage("§a§l[Man10Fermentation] §7/mferm §rレシピを表示します");
+                        sender.sendMessage("§a§l[Man10Fermentation] §7/mferm lock §r発酵樽をロックします");
+                        sender.sendMessage("§a§l[Man10Fermentation] §7/mferm unlock §r発酵樽のロックを解除します");
                         if (sender.hasPermission("mferm.op")){
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm on/off システムをon/offします");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm barral 発酵用の樽を自分に付与します");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm add [名前] [時間(分)] レシピを追加します");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm delete [名前] レシピを削除します");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm addworld [ワールド名] 設置できるワールドを追加します");
-                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm deleteworld [ワールド名] 設置できるワールドを削除します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm on/off §rシステムをon/offします");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm barrel §r発酵用の樽を自分に付与します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm setbarrel §r今持っているアイテムの名前とLoreを発酵用の樽の名前とLoreにします");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm add [名前] [時間(分)] §rレシピを追加します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm delete [名前] §rレシピを削除します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm addworld [ワールド名] §r設置できるワールドを追加します");
+                            sender.sendMessage("§a§l[Man10Fermentation] §7/mferm deleteworld [ワールド名] §r設置できるワールドを削除します");
                         }
                         if (!system){
                             sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
@@ -94,17 +97,41 @@ public class Command implements CommandExecutor, TabCompleter {
                         sender.sendMessage("§a§l[Man10Fermentation] §rOFFにしました");
                         return true;
 
-                    case "barral":
-                        if (!system){
-                            sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
-                            return true;
-                        }
+                    case "barrel":
                         if (!sender.hasPermission("mferm.op")){
                             sender.sendMessage("§a§l[Man10Fermentation] §r/mferm help でhelpを表示");
                             return true;
                         }
+                        if (!system){
+                            sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
+                            return true;
+                        }
                         ((Player) sender).getInventory().addItem(Function.CreateBarrel());
                         sender.sendMessage("§a§l[Man10Fermentation] §r付与しました");
+                        return true;
+
+                    case "setbarrel":
+                        if (!sender.hasPermission("mferm.op")){
+                            sender.sendMessage("§a§l[Man10Fermentation] §r/mferm help でhelpを表示");
+                            return true;
+                        }
+                        if (!system){
+                            sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
+                            return true;
+                        }
+                        barrellore.clear();
+                        ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
+                        if (!item.hasItemMeta()){
+                            barrellore.add(Component.text("発酵用の樽"));
+                            barrelname = Component.text("樽");
+                            sender.sendMessage("§a§l[Man10Fermentation] §rItemMetaが存在しないので初期値を設定しました。");
+                            return true;
+                        }
+                        if (item.getItemMeta().hasDisplayName()) barrelname = item.getItemMeta().displayName();
+                        else barrelname = Component.text("樽");
+                        if (item.getItemMeta().hasLore()) barrellore = item.getItemMeta().lore();
+                        else barrellore.add(Component.text("発酵用の樽"));
+                        sender.sendMessage("§a§l[Man10Fermentation] §r設定しました。");
                         return true;
 
                     default:
@@ -135,11 +162,10 @@ public class Command implements CommandExecutor, TabCompleter {
                             if (file.delete()) {
                                 recipes.remove(target);
                                 sender.sendMessage("§a§l[Man10Fermentation] §r削除しました");
-                                return true;
                             }else{
                                 sender.sendMessage("§a§l[Man10Fermentation] §rファイルの削除に失敗しました");
-                                return true;
                             }
+                            return true;
                         }
                         sender.sendMessage("§a§l[Man10Fermentation] §rファイルが見つかりませんでした");
                         return true;
@@ -210,7 +236,7 @@ public class Command implements CommandExecutor, TabCompleter {
             if (args.length == 1) {
                 if (args[0].length() == 0) {
                     if (sender.hasPermission("mferm.op"))
-                        return Arrays.asList("add", "addworld", "barral", "delete", "deleteworld", "lock", "on", "off", "unlock");
+                        return Arrays.asList("add", "addworld", "barrel", "delete", "deleteworld", "lock", "on", "off", "setbarrel", "unlock");
                     else return Arrays.asList("lock", "unlock");
                 } else {
                     if (sender.hasPermission("mferm.op")) {
@@ -220,8 +246,8 @@ public class Command implements CommandExecutor, TabCompleter {
                         else if ("addworld".startsWith(args[0])) {
                             return Collections.singletonList("addworld");
                         }
-                        else if ("barral".startsWith(args[0])) {
-                            return Collections.singletonList("barral");
+                        else if ("barrel".startsWith(args[0])) {
+                            return Collections.singletonList("barrel");
                         }
                         else if ("delete".startsWith(args[0]) && "deleteworld".startsWith(args[0])) {
                             return Arrays.asList("add", "addworld");
@@ -237,6 +263,9 @@ public class Command implements CommandExecutor, TabCompleter {
                         }
                         else if ("off".startsWith(args[0])) {
                             return Collections.singletonList("off");
+                        }
+                        else if ("setbarrel".startsWith(args[0])) {
+                            return Collections.singletonList("setbarrel");
                         }
                     }
                     if ("lock".startsWith(args[0])) {

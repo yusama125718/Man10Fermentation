@@ -1,5 +1,6 @@
 package yusama125718.man10fermentation;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
@@ -24,6 +25,8 @@ public final class Man10Fermentation extends JavaPlugin implements Listener, Com
     public static Boolean system;
     public static List<Player> lockuser = new ArrayList<>();
     public static List<Player> unlockuser = new ArrayList<>();
+    public static Component barrelname;
+    public static List<Component> barrellore = new ArrayList<>();
 
     @Override
     public void onEnable() {

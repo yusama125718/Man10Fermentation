@@ -285,6 +285,7 @@ public class Event implements Listener {
                 key = new NamespacedKey(mferm, "MFermDate");
                 barrel.getPersistentDataContainer().set(key, PersistentDataType.STRING, LocalDateTime.now().toString());
                 barrel.update();
+                e.getInventory().clear();
                 e.getWhoClicked().sendMessage("§a§l[Man10Fermentation] §r発酵を開始します");
             }
             e.getWhoClicked().closeInventory();

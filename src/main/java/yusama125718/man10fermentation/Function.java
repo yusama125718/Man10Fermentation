@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 
 import java.io.File;
+import java.util.List;
 
 import static yusama125718.man10fermentation.Config.getConfig;
 import static yusama125718.man10fermentation.Man10Fermentation.*;
@@ -26,6 +27,9 @@ public class Function {
         mferm.saveDefaultConfig();
         system = mferm.getConfig().getBoolean("system");
         allowworld.addAll(mferm.getConfig().getStringList("worlds"));
+        barrelname = Component.text(mferm.getConfig().getString("name"));
+        List<String> l = mferm.getConfig().getStringList("lore");
+        for (String s : l) barrellore.add(Component.text(s));
         Config.LoadFile();
         if (configfile.listFiles() != null){
             for (File file : configfile.listFiles()){
@@ -38,6 +42,8 @@ public class Function {
         ItemStack barrel = new ItemStack(Material.BARREL);
         ItemMeta meta = barrel.getItemMeta();
         meta.getPersistentDataContainer().set(new NamespacedKey(mferm , "Man10Fermentation"), PersistentDataType.STRING,"barrel");
+        meta.displayName(barrelname);
+        meta.lore(barrellore);
         barrel.setItemMeta(meta);
         return barrel;
     }

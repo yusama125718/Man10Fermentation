@@ -1,3 +1,6 @@
 system: true
 worlds:
 - world
+name: "発酵樽"
+lore:
+  - "発酵用の特別な樽"
