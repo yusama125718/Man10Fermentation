@@ -8,6 +8,7 @@ import org.bukkit.block.Barrel;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -15,8 +16,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
@@ -36,7 +39,7 @@ public class Event implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void PlaceBarrel(BlockPlaceEvent e){         //発酵樽設置
         if (!e.getBlockPlaced().getState().getType().equals(Material.BARREL)) return;
         if (!e.getItemInHand().hasItemMeta() || e.getItemInHand().getItemMeta().getPersistentDataContainer().isEmpty()) return;
@@ -60,7 +63,7 @@ public class Event implements Listener {
         }else e.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void BreakBarrel(BlockBreakEvent e){         //発酵樽破壊
         if (!e.getBlock().getState().getType().equals(Material.BARREL) || unlockuser.contains(e.getPlayer()) || lockuser.contains(e.getPlayer())) return;
         if (e.getBlock().getState() instanceof Barrel barrel) {
@@ -82,7 +85,7 @@ public class Event implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void LockBarrel(BlockBreakEvent e){             //発酵樽保護
         if (!system) return;
         if (lockuser == null || unlockuser == null) return;
@@ -161,9 +164,9 @@ public class Event implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void Interact(PlayerInteractEvent e){        //発酵樽を開く
-        if (!e.getPlayer().hasPermission("mferm.p") || !e.hasBlock() || !e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!e.getPlayer().hasPermission("mferm.p") || !e.hasBlock() || !e.getAction().equals(Action.RIGHT_CLICK_BLOCK) || !e.getHand().equals(EquipmentSlot.HAND)) return;
         if (!e.getClickedBlock().getType().equals(BARREL)) return;
         LocalDateTime d = null;
         Data.recipe r = new Data.recipe();
@@ -173,6 +176,13 @@ public class Event implements Listener {
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽は保護されています");
                 e.setCancelled(true);
                 return;
+            }
+            for (Player p : activebarrel.keySet()){
+                if (activebarrel.get(p).equals(e.getClickedBlock())){
+                    e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽は開かれています");
+                    e.setCancelled(true);
+                    return;
+                }
             }
             if (barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermDate"), PersistentDataType.STRING) && barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermRecipe"), PersistentDataType.STRING)){
                 for (Data.recipe recipe : recipes) {
@@ -257,6 +267,16 @@ public class Event implements Listener {
             return;
         }
         RecipeExample((Player) e.getWhoClicked(), e.getRawSlot() + 45 * (page - 1));
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void ExampleGUIClick(InventoryClickEvent e) {     //レシピ詳細確認用
+        if (e.getInventory().getSize() != 18) return;
+        String title = null;
+        Component component = e.getView().title();
+        if (component instanceof TextComponent text) title = text.content();
+        if (title == null || !title.startsWith("[Mferm Recipe]")) return;
         e.setCancelled(true);
     }
 

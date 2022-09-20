@@ -57,7 +57,7 @@ public class GUI {
 
     public static void RecipeExample(Player p,Integer index){
         Data.recipe target = recipes.get(index);
-        Inventory inv = Bukkit.createInventory(null,18,Component.text("[MFerm]" + target.name));
+        Inventory inv = Bukkit.createInventory(null,18,Component.text("[Mferm Recipe]" + target.name));
         for (int i = 0;i < 18;i++) inv.setItem(i,getItem(Material.WHITE_STAINED_GLASS_PANE,1,"",0));
         int min, hour, day = 0;
         String time = "";

@@ -24,6 +24,10 @@ public class Command implements CommandExecutor, TabCompleter {
         if (!sender.hasPermission("mferm.p")) return true;
         switch (args.length) {
             case 0:
+                if (!system){
+                    sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
+                    return true;
+                }
                 GUI.OpenRecipe((Player) sender,1);
                 return true;
 
