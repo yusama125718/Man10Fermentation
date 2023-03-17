@@ -56,8 +56,8 @@ public class Command implements CommandExecutor, TabCompleter {
                             sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
                             return true;
                         }
-                        unlockuser.remove((Player) sender);
-                        if (!lockuser.contains((Player) sender)) lockuser.add((Player) sender);
+                        unlockuser.remove(((Player) sender).getUniqueId());
+                        if (!lockuser.contains(((Player) sender).getUniqueId())) lockuser.add(((Player) sender).getUniqueId());
                         sender.sendMessage("§a§l[Man10Fermentation] §rロックしたい発酵樽を壊してください");
                         return true;
 
@@ -66,8 +66,8 @@ public class Command implements CommandExecutor, TabCompleter {
                             sender.sendMessage("§a§l[Man10Fermentation] §rシステムは現在OFFです");
                             return true;
                         }
-                        lockuser.remove((Player) sender);
-                        if (!unlockuser.contains((Player) sender)) unlockuser.add((Player) sender);
+                        lockuser.remove(((Player) sender).getUniqueId());
+                        if (!unlockuser.contains(((Player) sender).getUniqueId())) unlockuser.add(((Player) sender).getUniqueId());
                         sender.sendMessage("§a§l[Man10Fermentation] §rロックしたい発酵樽を壊してください");
                         return true;
 
@@ -162,7 +162,7 @@ public class Command implements CommandExecutor, TabCompleter {
                             return true;
                         }
                         for (File file : configfile.listFiles()){
-                            if (!file.getName().equals(args[2] + ".yml")) continue;
+                            if (!file.getName().equals(args[1] + ".yml")) continue;
                             if (file.delete()) {
                                 recipes.remove(target);
                                 sender.sendMessage("§a§l[Man10Fermentation] §r削除しました");
@@ -254,7 +254,7 @@ public class Command implements CommandExecutor, TabCompleter {
                             return Collections.singletonList("barrel");
                         }
                         else if ("delete".startsWith(args[0]) && "deleteworld".startsWith(args[0])) {
-                            return Arrays.asList("add", "addworld");
+                            return Arrays.asList("delete", "deleteworld");
                         }
                         else if ("deleteworld".startsWith(args[0])) {
                             return Collections.singletonList("deleteworld");

@@ -74,8 +74,8 @@ public class GUI {
         inv.setItem(12,getItem(Material.RED_STAINED_GLASS_PANE,1,"材料",1));
         inv.setItem(14,getItem(Material.BLUE_STAINED_GLASS_PANE,1,"完成品",1));
         inv.setItem(4,getItem(Material.QUARTZ,1,time,62));
-        inv.setItem(3,target.material);
-        inv.setItem(5,target.result);
+        inv.setItem(3,target.material.clone());
+        inv.setItem(5,target.result.clone());
         p.openInventory(inv);
     }
 
@@ -94,7 +94,7 @@ public class GUI {
         for (int i = 0;i < 18;i++) inv.setItem(i,getItem(Material.WHITE_STAINED_GLASS_PANE,1,"",1));
         LocalDateTime finishtime = d.plusMinutes(r.time);
         if (LocalDateTime.now().isAfter(finishtime)){
-            inv.setItem(4,r.result);
+            inv.setItem(4,r.result.clone());
             inv.setItem(13,getItem(Material.RED_STAINED_GLASS_PANE,1,"受け取り",1));
             p.openInventory(inv);
         } else {

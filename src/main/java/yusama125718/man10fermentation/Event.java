@@ -19,15 +19,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MainHand;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static java.lang.Integer.parseInt;
 import static org.bukkit.Material.*;
@@ -65,7 +62,7 @@ public class Event implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void BreakBarrel(BlockBreakEvent e){         //発酵樽破壊
-        if (!e.getBlock().getState().getType().equals(Material.BARREL) || unlockuser.contains(e.getPlayer()) || lockuser.contains(e.getPlayer())) return;
+        if (!e.getBlock().getState().getType().equals(Material.BARREL) || unlockuser.contains(e.getPlayer().getUniqueId()) || lockuser.contains(e.getPlayer().getUniqueId())) return;
         if (e.getBlock().getState() instanceof Barrel barrel) {
             if (barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING) && barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE)){
                 if (!barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING).equals(e.getPlayer().getUniqueId().toString()) && barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE) == 1 && !e.getPlayer().hasPermission("mferm.op")){
@@ -89,78 +86,78 @@ public class Event implements Listener {
     public void LockBarrel(BlockBreakEvent e){             //発酵樽保護
         if (!system) return;
         if (lockuser == null || unlockuser == null) return;
-        if (lockuser.contains(e.getPlayer())){
+        if (lockuser.contains(e.getPlayer().getUniqueId())){
             if (!e.getBlock().getState().getType().equals(Material.BARREL)){
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこのアイテムは保護できません");
-                lockuser.remove(e.getPlayer());
+                lockuser.remove(e.getPlayer().getUniqueId());
                 e.setCancelled(true);
                 return;
             }
             if (e.getBlock().getState() instanceof Barrel barrel){
                 if (!barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING) && !barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE)){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの樽は保護できません");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 if (barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE) == 1){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽は保護されています");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 if (!barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING).equals(e.getPlayer().getUniqueId().toString())){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽をあなたが保護することはできません");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 byte b = 1;
                 barrel.getPersistentDataContainer().set(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE, b);
                 barrel.update();
-                lockuser.remove(e.getPlayer());
+                lockuser.remove(e.getPlayer().getUniqueId());
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §r保護しました");
                 return;
             }
-            lockuser.remove(e.getPlayer());
+            lockuser.remove(e.getPlayer().getUniqueId());
             return;
         }
-        if (unlockuser.contains(e.getPlayer())){
+        if (unlockuser.contains(e.getPlayer().getUniqueId())){
             if (!e.getBlock().getState().getType().equals(Material.BARREL)){
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこのアイテムは保護できません");
-                lockuser.remove(e.getPlayer());
+                lockuser.remove(e.getPlayer().getUniqueId());
                 e.setCancelled(true);
                 return;
             }
             if (e.getBlock().getState() instanceof Barrel barrel){
                 if (!barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING) && !barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE)){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの樽は保護できません");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 if (barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE) == 0){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽は保護されていません");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 if (!barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING).equals(e.getPlayer().getUniqueId().toString())){
                     e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽はあなたが保護を解除することはできません");
-                    lockuser.remove(e.getPlayer());
+                    lockuser.remove(e.getPlayer().getUniqueId());
                     e.setCancelled(true);
                     return;
                 }
                 byte b = 0;
                 barrel.getPersistentDataContainer().set(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE, b);
                 barrel.update();
-                unlockuser.remove(e.getPlayer());
+                unlockuser.remove(e.getPlayer().getUniqueId());
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §r保護を解除しました");
                 return;
             }
-            unlockuser.remove(e.getPlayer());
+            unlockuser.remove(e.getPlayer().getUniqueId());
         }
     }
 
@@ -172,6 +169,11 @@ public class Event implements Listener {
         Data.recipe r = new Data.recipe();
         if (e.getClickedBlock().getState() instanceof Barrel barrel){
             if (!barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING) && !barrel.getPersistentDataContainer().has(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE)) return;
+            if (!allowworld.contains(e.getPlayer().getWorld().getName())){
+                e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこのワールドでは使えません");
+                e.setCancelled(true);
+                return;
+            }
             if (!barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "Man10Fermentation"), PersistentDataType.STRING).equals(e.getPlayer().getUniqueId().toString()) && barrel.getPersistentDataContainer().get(new NamespacedKey(mferm, "MFermLock"), PersistentDataType.BYTE) == 1 && !e.getPlayer().hasPermission("mferm.op")){
                 e.getPlayer().sendMessage("§a§l[Man10Fermentation] §rこの発酵樽は保護されています");
                 e.setCancelled(true);
@@ -331,7 +333,7 @@ public class Event implements Listener {
                 key = new NamespacedKey(mferm, "MFermDate");
                 barrel.getPersistentDataContainer().remove(key);
                 if (e.getCurrentItem().getItemMeta().displayName().equals(Component.text("受け取り"))){
-                    e.getWhoClicked().getInventory().addItem(r.get(name).result);
+                    e.getWhoClicked().getInventory().addItem(r.get(name).result.clone());
                     e.getWhoClicked().sendMessage("§a§l[Man10Fermentation] §r完成品を受け取りました");
                 } else {
                     e.getWhoClicked().getInventory().addItem(r.get(name).material);
