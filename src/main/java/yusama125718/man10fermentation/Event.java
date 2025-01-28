@@ -336,7 +336,7 @@ public class Event implements Listener {
                     e.getWhoClicked().getInventory().addItem(r.get(name).result.clone());
                     e.getWhoClicked().sendMessage("§a§l[Man10Fermentation] §r完成品を受け取りました");
                 } else {
-                    e.getWhoClicked().getInventory().addItem(r.get(name).material);
+                    e.getWhoClicked().getInventory().addItem(r.get(name).material.clone());
                     e.getWhoClicked().sendMessage("§a§l[Man10Fermentation] §r発酵を中断しました");
                 }
                 barrel.update();
